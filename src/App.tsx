@@ -1,11 +1,10 @@
 import './App.css'
+import FlowCanvas from './components/FlowCanvas'
 
 function App() {
 
   return (
-    <>
-hey there
-    </>
+    <><FlowCanvas/> </>
   )
 }
 

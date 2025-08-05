@@ -38,6 +38,8 @@ export const useStore=create<TreeStore>((set,get)=>({
                 id:edgeId,
                 source:parentId,
                 target:id,
+                animated:true,
+                
             }
             set((state)=>({
                 nodes:[...state.nodes, newNode],

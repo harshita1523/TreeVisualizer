@@ -14,6 +14,7 @@ export interface TreeeEdge{
     id:string;
     source:string;
     target:string;
+    animated?:boolean;
 }
 
 export const NODE_TYPES={

@@ -20,6 +20,7 @@ import { getLayoutedElements } from "../flow/layout";
 export default function FlowCanvas() {
   const storeNodes = useStore((s) => s.nodes);
   const storeEdges = useStore((s) => s.edges);
+  const setStoreEdges = useStore((s) => s.setEdges);
   const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes as Node[]);
   const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges);
   const [selectedNode, setSelectedNode] = useState<TreeNode | null>(null);
@@ -33,16 +34,21 @@ export default function FlowCanvas() {
     []
   );
 
-  const onConnect = useCallback(
-    (params: Connection) =>
-      setEdges((eds) =>
-        addEdge(
-          { ...params, type: ConnectionLineType.SmoothStep, animated: true },
-          eds
-        )
-      ),
-    []
-  );
+
+const onConnect = useCallback(
+  (params: Connection) => {
+    setEdges((eds) => {
+      const updated = addEdge(
+        { ...params, type: ConnectionLineType.SmoothStep, animated: true },
+        eds
+      );
+      setStoreEdges(updated); // ✅ Update global store
+      return updated;
+    });
+  },
+  [setEdges, setStoreEdges]
+);
+
 
   const onLayout = useCallback(
     (direction: LayoutDirection) => {
@@ -52,7 +58,7 @@ export default function FlowCanvas() {
       setNodes([...layoutedNodes] as Node[]);
       setEdges([...layoutedEdges]);
     },
-    [nodes, edges, storeEdges, storeNodes]
+    [storeEdges, storeNodes]
   );
 
   useEffect(() => {
@@ -63,7 +69,7 @@ export default function FlowCanvas() {
 
     setNodes(layoutedNodes as Node[]);
     setEdges(layoutedEdges);
-  }, [storeNodes, storeEdges,edges]);
+  }, [storeNodes, storeEdges]);
 
   const onNodeClick = (_: React.MouseEvent, node: Node) => {
     const fullNode = storeNodes.find((n) => n.id === node.id) || null;
@@ -83,18 +89,20 @@ export default function FlowCanvas() {
           onNodeClick={onNodeClick}
           onConnect={onConnect}
           onPaneClick={() => setSelectedNode(null)}
+          connectionLineType={ConnectionLineType.SmoothStep}
+          nodesDraggable={false}
           fitView
           snapToGrid={true}
         >
           <div className="absolute top-4 right-4 flex gap-2 z-10">
             <button
-              className="bg-blue-500 text-white px-3 py-1 rounded"
+              className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer"
               onClick={() => onLayout("TB")}
             >
               Vertical Layout
             </button>
             <button
-              className="bg-green-500 text-white px-3 py-1 rounded"
+              className="bg-green-500 text-white px-3 py-1 rounded cursor-pointer"
               onClick={() => onLayout("LR")}
             >
               Horizontal Layout

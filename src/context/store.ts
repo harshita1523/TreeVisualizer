@@ -12,7 +12,7 @@ export interface TreeStore{
 }
 
 
-const useStore=create<TreeStore>((set,get)=>({
+export const useStore=create<TreeStore>((set,get)=>({
 
     nodes:[],
     edges:[],

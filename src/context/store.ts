@@ -1,13 +1,16 @@
 
 import { create } from "zustand";
+import { v4 as uuidv4 } from 'uuid';
 import type { NodeType, TreeeEdge, TreeNode } from "../data/types";
 
 export interface TreeStore{
     nodes:TreeNode[];
     edges:TreeeEdge[];
+    selectedNode?:TreeNode;
     setNodes:(nodes:TreeNode[])=>void;
     setEdges:(edges:TreeeEdge[])=>void;
-    addNode:(parentId:TreeNode["id"],nodeType:NodeType,label?:string)=>void;
+    setSelectedNode:(nodeId:TreeNode["id"])=>void;
+    addNode:(nodeType:NodeType,label:string,parentId?:TreeNode["id"])=>void;
     deleteNode:(id:TreeNode["id"])=>void;
 }
 
@@ -18,9 +21,12 @@ export const useStore=create<TreeStore>((set,get)=>({
     edges:[],
     setNodes:(nodes)=>set({nodes}),
     setEdges:(edges)=>set({edges}),
-    addNode:(parentId,type,label)=>{
-        const id="fghjk";
-        const edgeId="ddfghjk";
+    setSelectedNode:(id:TreeNode["id"])=>{
+       set({selectedNode:get().nodes.find((n)=>n.id===id)}) 
+    },
+    addNode:(type,label,parentId)=>{
+        const id=uuidv4();
+        
         const newNode:TreeNode={
             id,
             type,
@@ -30,15 +36,23 @@ export const useStore=create<TreeStore>((set,get)=>({
             }
 
         }
-        const newEdge:TreeeEdge={
-            id:edgeId,
-            source:parentId,
-            target:id,
+
+        if(parentId){
+            const edgeId = uuidv4();
+            const newEdge:TreeeEdge={
+                id:edgeId,
+                source:parentId,
+                target:id,
+            }
+            set((state)=>({
+                nodes:[...state.nodes, newNode],
+                edges:[...state.edges,newEdge]
+            }))
         }
+        
 
         set((state)=>({
             nodes:[...state.nodes, newNode],
-            edges:[...state.edges,newEdge]
         }))
     },
     deleteNode:(id:TreeNode["id"])=>{

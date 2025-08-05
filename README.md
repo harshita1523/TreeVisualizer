@@ -4,7 +4,7 @@ An interactive tree visualizer for building and managing hierarchical data struc
 
 Built using **Vite**, **React**, **TypeScript**, **TailwindCSS**, **React Flow**, and **Ant Design**.
 
-### 🌐 [Live Demo](https://your-vercel-link.vercel.app)
+### 🌐 [Live Demo](https://tree-visualizer-8la9.vercel.app/)
 
 ---
 
@@ -126,5 +126,7 @@ export const ROOT_NODE_TYPES = ['Account', 'Loan'];
 - 🗺 **MiniMap**, zoom controls, and snap-to-grid support
 - ✅ Edge validation based on defined parent-child rules
 - 💬 Helpful toast messages using `antd/message`
+
+<img width="1920" height="876" alt="ss-for-readme-file" src="https://github.com/user-attachments/assets/b05ec579-6145-47d1-ae84-fab5526e298c" />
 
 

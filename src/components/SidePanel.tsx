@@ -5,6 +5,7 @@ import {
   Space,
   message,
   Button,
+  Popconfirm,
 } from "antd";
 import {
   NODE_RULES,
@@ -126,14 +127,15 @@ export default function SidePanel({ selectedNode }: SidePanelProps) {
           </Button>
 
           {selectedNode && (
+            <Popconfirm title="Are you sure you want to delete this node ?" onConfirm={handleDelete}>
             <Button
               danger
               block
               icon={<Trash2 size={16} />}
-              onClick={handleDelete}
             >
               Delete Node
             </Button>
+            </Popconfirm>
           )}
         </Space>
       </div>

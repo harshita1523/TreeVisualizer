@@ -26,15 +26,10 @@ export const useStore=create<TreeStore>((set,get)=>({
     },
     addNode:(type,label,parentId)=>{
         const id=uuidv4();
-        
-        const newNode:TreeNode={
+        const newNode: TreeNode={
             id,
             type,
             data:{label:label ?? `${type} ${id}`},
-            position:{
-                x:0,y:0
-            }
-
         }
 
         if(parentId){

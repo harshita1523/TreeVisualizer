@@ -1,14 +1,12 @@
 export type NodeType = 'Account' | 'Loan' | 'Collateral';
 
+export type LayoutDirection = 'TB' | 'LR';
+
 export interface TreeNode{
     id:string;
     type:NodeType;
     data:{
         label:string
-    };
-    position:{
-        x:number;
-        y:number;
     };
 }
 

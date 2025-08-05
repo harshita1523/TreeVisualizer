@@ -1,7 +1,6 @@
 import { Handle, Position, type NodeProps } from 'react-flow-renderer';
 import type { NodeType } from '../data/types';
 import { NODE_CONFIG } from '../data/nodeConfig';
-import { Divider } from 'antd';
 
 
 const CustomNode = ({ data, type }: NodeProps) => {

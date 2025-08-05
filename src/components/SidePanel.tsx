@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   Divider,
@@ -27,7 +27,6 @@ export default function SidePanel({ onClose, selectedNode }: SidePanelProps) {
   const [label, setLabel] = useState('');
   const [type, setType] = useState<string>(NODE_TYPE.ACCOUNT);
 
-  // Sync form state when node is selected
   useEffect(() => {
     if (selectedNode) {
       setLabel(selectedNode.data.label);
@@ -60,6 +59,7 @@ export default function SidePanel({ onClose, selectedNode }: SidePanelProps) {
 
   return (
     <div className="p-5 bg-blue-50 border border-blue-200 h-screen w-full flex flex-col justify-between">
+
         <div>
         <Title level={4} className="mb-4">
           {selectedNode ? 'Edit Node' : 'Add Root Node'}

@@ -54,9 +54,29 @@ export const useStore=create<TreeStore>((set,get)=>({
     },
     deleteNode:(id:TreeNode["id"])=>{
         const {edges,nodes}=get();
-        console.log("Edges..",edges);
-        console.log("Enodees..",nodes);
-        console.log("id..",id);
+        
+        const findDescendants=(parentId:string,acc:Set<String>)=>{
+            const children=edges.filter((edge)=>edge.source===parentId).map((edge)=>edge.target)
+
+            for(const childId of children){
+                if(!acc.has(childId)){
+                    acc.add(childId);
+                    findDescendants(childId,acc);
+                }
+            }
+        }
+
+        const idsToDelete=new Set<String>();
+        idsToDelete.add(id);
+        findDescendants(id, idsToDelete);
+
+        const updatedNodes=nodes.filter((ele)=>!idsToDelete.has(ele.id));
+        const updatedEdges=edges.filter((ele)=>!idsToDelete.has(ele.id));
+
+        set({
+            nodes:updatedNodes,
+            edges:updatedEdges
+        })
     }
 
 }))

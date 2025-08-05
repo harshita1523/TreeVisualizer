@@ -42,7 +42,7 @@ const onConnect = useCallback(
         { ...params, type: ConnectionLineType.SmoothStep, animated: true },
         eds
       );
-      setStoreEdges(updated); // ✅ Update global store
+      setStoreEdges(updated);
       return updated;
     });
   },
@@ -123,7 +123,6 @@ const onConnect = useCallback(
       </div>
       <div className="h-screen w-1/4">
         <SidePanel
-          onClose={() => setSelectedNode(null)}
           selectedNode={selectedNode}
         />
       </div>

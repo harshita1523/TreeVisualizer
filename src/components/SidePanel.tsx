@@ -20,11 +20,10 @@ import { Trash2 } from "lucide-react";
 const { Title, Text } = Typography;
 
 interface SidePanelProps {
-  onClose: () => void;
   selectedNode: TreeNode | null;
 }
 
-export default function SidePanel({ onClose, selectedNode }: SidePanelProps) {
+export default function SidePanel({ selectedNode }: SidePanelProps) {
   const allNodes = useStore((s) => s.nodes);
   const addNode = useStore((s) => s.addNode);
   const deleteNode = useStore((s) => s.deleteNode);
@@ -65,7 +64,6 @@ export default function SidePanel({ onClose, selectedNode }: SidePanelProps) {
   
       addNode(nodeType, label);
       message.success(`Root node (${nodeType}) added`);
-      onClose();
       return;
     }
   
@@ -80,7 +78,6 @@ export default function SidePanel({ onClose, selectedNode }: SidePanelProps) {
   
     addNode(nodeType, label, selectedNode.id);
     message.success(`${nodeType} node added under ${parentType}`);
-    onClose();
   };
   
 
@@ -88,7 +85,6 @@ export default function SidePanel({ onClose, selectedNode }: SidePanelProps) {
     if (!selectedNode) return;
     deleteNode(selectedNode.id);
     message.success("Node deleted");
-    onClose();
   };
 
   return (

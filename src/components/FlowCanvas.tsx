@@ -2,7 +2,6 @@ import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  useEdges,
   useEdgesState,
   useNodesState,
   type Node,

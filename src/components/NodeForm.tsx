@@ -1,5 +1,5 @@
 import { Input, Select, Typography } from "antd";
-import { NODE_TYPES, NodeTypeOptions, ROOT_NODE_TYPES, type NodeType } from "../data/types";
+import {NodeTypeOptions, ROOT_NODE_TYPES, type NodeType } from "../data/types";
 
 const { Text } = Typography;
 

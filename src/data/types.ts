@@ -28,4 +28,6 @@ export const NODE_RULES:Record<NodeType,NodeType[]> ={
     [NODE_TYPES.COLLATERAL]:[],
 }
 
+export const NodeTypeOptions=[...Object.values(NODE_TYPES)];
+
 export const ROOT_NODE_TYPES:NodeType[]=[NODE_TYPES.ACCOUNT,NODE_TYPES.LOAN];

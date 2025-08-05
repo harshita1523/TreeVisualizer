@@ -58,3 +58,5 @@ export const useStore=create<TreeStore>((set,get)=>({
     }
 
 }))
+
+export const store=useStore;

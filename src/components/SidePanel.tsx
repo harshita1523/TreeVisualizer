@@ -1,17 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 import {
-  Button,
   Divider,
-  Input,
-  Select,
   Typography,
   Space,
   message,
-} from 'antd';
-import { NODE_RULES, NODE_TYPES as NODE_TYPE, type NodeType, type TreeNode } from '../data/types';
-import { useStore } from '../context/store';
+  Button,
+} from "antd";
+import {
+  NODE_RULES,
+  ROOT_NODE_TYPES,
+  type NodeType,
+  type TreeNode,
+} from "../data/types";
+import { useStore } from "../context/store";
+import NodeDetails from "./NodeDetails";
+import NodeForm from "./NodeForm";
+import { Trash2 } from "lucide-react";
 
-const { Text, Title } = Typography;
+const { Title, Text } = Typography;
 
 interface SidePanelProps {
   onClose: () => void;
@@ -19,122 +25,118 @@ interface SidePanelProps {
 }
 
 export default function SidePanel({ onClose, selectedNode }: SidePanelProps) {
-
-  const allNodes=useStore((s)=>s.nodes);
+  const allNodes = useStore((s) => s.nodes);
   const addNode = useStore((s) => s.addNode);
   const deleteNode = useStore((s) => s.deleteNode);
 
-  const [label, setLabel] = useState('');
-  const [type, setType] = useState<string>(NODE_TYPE.ACCOUNT);
+  const isCanvasEmpty = allNodes.length === 0;
 
-  useEffect(() => {
-    if (selectedNode) {
-      setLabel(selectedNode.data.label);
-      setType(selectedNode.type);
-    } else {
-      setLabel('');
-      setType(NODE_TYPE.ACCOUNT);
-    }
+  const [label, setLabel] = useState("");
+  const [nodeType, setNodeType] = useState<NodeType | null>(null);
+
+  const allowedChildren = useMemo(() => {
+    return selectedNode ? NODE_RULES[selectedNode.type] : [];
   }, [selectedNode]);
 
-  const allowedChildren = selectedNode ? NODE_RULES[selectedNode.type] : [];
+  useEffect(() => {
+    setLabel("");
+    setNodeType(null);
+  }, [selectedNode, isCanvasEmpty]);
 
   const handleAddNode = () => {
     if (!label.trim()) {
-      message.warning('Label is required');
+      message.warning("Label is required");
       return;
     }
-
-    addNode( type as NodeType, label);
-    message.success(`Added ${type} node`);
+  
+    if (!nodeType) {
+      message.warning("Please select node type!");
+      return;
+    }
+  
+    const isRootNode = isCanvasEmpty || selectedNode === null;
+  
+    // If root node
+    if (isRootNode) {
+      if (!ROOT_NODE_TYPES.includes(nodeType)) {
+        message.error(`${nodeType} cannot be added at the root level`);
+        return;
+      }
+  
+      addNode(nodeType, label);
+      message.success(`Root node (${nodeType}) added`);
+      onClose();
+      return;
+    }
+  
+    // If adding as a child
+    const parentType = selectedNode.type;
+    const validChildren = NODE_RULES[parentType];
+  
+    if (!validChildren.includes(nodeType)) {
+      message.error(`${nodeType} is not allowed under ${parentType}`);
+      return;
+    }
+  
+    addNode(nodeType, label, selectedNode.id);
+    message.success(`${nodeType} node added under ${parentType}`);
     onClose();
   };
+  
 
   const handleDelete = () => {
     if (!selectedNode) return;
     deleteNode(selectedNode.id);
-    message.success('Node deleted');
+    message.success("Node deleted");
     onClose();
   };
 
   return (
     <div className="p-5 bg-blue-50 border border-blue-200 h-screen w-full flex flex-col justify-between">
-
-        <div>
+      <div>
         <Title level={4} className="mb-4">
-          {selectedNode ? 'Edit Node' : 'Add Root Node'}
+          {isCanvasEmpty ? "Add Root Node" : "Node Details"}
         </Title>
-        <Divider/>
+        <Divider />
 
-        {/* Label */}
-        <Text strong>Label</Text>
-        <Input
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          placeholder="Enter node label"
-          className="mb-4"
-        />
-
-        {/* Type */}
-        <Text strong>Type</Text>
-        <Select
-          value={type}
-          onChange={(value) => setType(value)}
-          className="mb-4 w-full"
-        >
-          {Object.values(NODE_TYPE).map((t) => (
-            <Select.Option key={t} value={t}>
-              {t}
-            </Select.Option>
-          ))}
-        </Select>
-
-        {/* Node ID */}
-        {selectedNode && (
-          <p className="mb-4 text-gray-600 text-sm">
-            <Text strong>ID:</Text> {selectedNode.id}
-          </p>
+        {!isCanvasEmpty && selectedNode && (
+          <>
+            <NodeDetails node={selectedNode} />
+            <Divider />
+          </>
         )}
 
-        {/* Add Child Buttons */}
-        {selectedNode && (
-          <>
-            <Divider orientation="left">Add Child</Divider>
-            {allowedChildren.length > 0 ? (
-              allowedChildren.map((childType) => (
-                <Button
-                  key={childType}
-                  block
-                  className="mb-2"
-                  onClick={() => addNode( childType, label)}
-                >
-                  ➕ Add {childType}
-                </Button>
-              ))
-            ) : (
-              <Text type="secondary" italic>
-                No valid children
-              </Text>
-            )}
-          </>
+        <NodeForm
+          label={label}
+          setLabel={setLabel}
+          type={nodeType}
+          setType={setNodeType}
+          isRoot={isCanvasEmpty}
+          allowedChildren={allowedChildren}
+        />
+
+        {!isCanvasEmpty && selectedNode && allowedChildren.length === 0 && (
+          <Text type="secondary" italic>
+            This node type cannot have children.
+          </Text>
         )}
       </div>
 
-      {/* Footer Actions */}
       <div>
         <Divider />
         <Space direction="vertical" className="w-full">
-          <Button
-            type="primary"
-            block
-            onClick={handleAddNode}
-          >
-            {selectedNode ? 'Update Node' : 'Add Root Node'}
+          <Button type="primary" block onClick={handleAddNode}>
+            {isCanvasEmpty ? "Add Root Node" : "Add Child Node"}
           </Button>
 
           {selectedNode && (
-            <Button danger block onClick={handleDelete}>
-              🗑️ Delete Node
+            <Button
+              danger
+              block
+              icon={<Trash2 size={16} />}
+              onClick={handleDelete}
+            >
+              Delete Node
             </Button>
           )}
         </Space>

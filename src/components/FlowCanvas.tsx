@@ -49,17 +49,6 @@ const onConnect = useCallback(
 );
 
 
-  const onLayout = useCallback(
-    (direction: LayoutDirection) => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(nodes, edges, direction);
-
-      setNodes([...layoutedNodes] as Node[]);
-      setEdges([...layoutedEdges]);
-    },
-    [storeEdges, storeNodes]
-  );
-
   useEffect(() => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
       storeNodes as Node[],
@@ -93,20 +82,7 @@ const onConnect = useCallback(
           fitView
           snapToGrid={true}
         >
-          <div className="absolute top-4 right-4 flex gap-2 z-10">
-            <button
-              className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer"
-              onClick={() => onLayout("TB")}
-            >
-              Vertical Layout
-            </button>
-            <button
-              className="bg-green-500 text-white px-3 py-1 rounded cursor-pointer"
-              onClick={() => onLayout("LR")}
-            >
-              Horizontal Layout
-            </button>
-          </div>
+          
           <MiniMap />
           <Background />
           <Controls />

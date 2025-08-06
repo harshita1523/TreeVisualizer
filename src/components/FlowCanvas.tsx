@@ -12,7 +12,7 @@ import ReactFlow, {
 import CustomNode from "./CustomNode";
 import SidePanel from "./SidePanel";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import type { LayoutDirection, TreeNode } from "../data/types";
+import type { TreeNode } from "../data/types";
 import { useStore } from "../context/store";
 import { getLayoutedElements } from "../flow/layout";
 

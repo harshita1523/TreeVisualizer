@@ -1,69 +1,132 @@
-# React + TypeScript + Vite
+# 🧠 Tree Visualizer – Loan Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive tree visualizer for building and managing hierarchical data structures in a **loan management system**, with clear visual representation of relationships between entities like **Accounts**, **Loans**, and **Collaterals**.
 
-Currently, two official plugins are available:
+Built using **Vite**, **React**, **TypeScript**, **TailwindCSS**, **React Flow**, and **Ant Design**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🌐 [Live Demo](https://tree-visualizer-8la9.vercel.app/)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📦 Tech Stack
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Frontend**: React + TypeScript + Vite
+- **Styling**: TailwindCSS + Ant Design (components, popovers, messages)
+- **Visualization**: React Flow (custom nodes, edges, layout)
+- **Deployment**: Vercel
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🌳 Tree Structure & Data Model
+
+Each node in the tree represents a business entity:
+
+Defined in data/types.ts
+
+```ts
+
+type TreeNode = {
+  id: string;
+  type: 'Account' | 'Loan' | 'Collateral';
+  data: {
+    label: string;
+  };
+};
+
+type TreeEdge = {
+  id: string;
+  source: string; // parent node ID
+  target: string; // child node ID
+};
+
+//Node Types & Rules
+
+export const NODE_TYPES = {
+  ACCOUNT: 'Account',
+  LOAN: 'Loan',
+  COLLATERAL: 'Collateral',
+} as const;
+
+export const NODE_RULES = {
+  Account: ['Loan', 'Collateral'],
+  Loan: ['Collateral'],
+  Collateral: [],
+};
+
+export const ROOT_NODE_TYPES = ['Account', 'Loan'];
 ```
+## 🧠 Rules & Node Types
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- ✅ **Only `Account` or `Loan` nodes can be root nodes.**
+- ❌ **`Collateral` can never be a root.**
+- 🔒 **Rules are enforced both:**
+  - In **Side Panel dropdowns**
+  - During **canvas edge connections**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🧠 UX Decisions
+
+### 🎛 Side Panel Layout
+
+- **Left pane** = Canvas  
+- **Right pane (SidePanel)** = Controls + Node Details
+
+#### 🟢 When _no node is selected_:
+- Shows form to **add a root node**
+- Only **root types** are shown in dropdown (`Account`, `Loan`)
+
+#### 🔵 When _a node is selected_:
+- Shows:
+  - **Node ID, Type, Label**
+  - Editable **Label** field
+  - **Dropdown** to select valid child types (based on parent node's type)
+  - ❌ Button to **Delete node and all descendants**
+
+---
+
+## ➕ Adding Nodes
+
+- **Root node** → when:
+  - Canvas is empty  
+  - OR a node is _deselected_
+- **Child node** → when a node is selected AND rules allow it
+
+---
+
+## ❌ Deleting Nodes
+
+- Deletes the **selected node** and **all its descendants**
+- Automatically updates:
+  - Canvas
+  - Edges
+  - Store state
+
+---
+
+## 🧭 Flow Control
+
+- 💡 **Layout Options** (via buttons on top-right):
+  - `Vertical (TB)`
+  - `Horizontal (LR)`
+
+- 🔄 **Auto-layout is enforced**
+  - No manual drag-and-drop
+- 🔗 **Edge connection validation**:
+  - Uses `validateConnection` logic based on `NODE_RULES`
+
+---
+
+## 🎨 Features
+
+- ✨ Custom nodes styled using **TailwindCSS**
+- 💬 **Popovers** via Ant Design to show node metadata
+- 🆔 Copyable Node IDs with **Lucide icon**
+- 🔄 Animated edges using `react-flow-renderer`
+- 🗺 **MiniMap**, zoom controls, and snap-to-grid support
+- ✅ Edge validation based on defined parent-child rules
+- 💬 Helpful toast messages using `antd/message`
+
+<img width="1920" height="876" alt="ss-for-readme-file" src="https://github.com/user-attachments/assets/b05ec579-6145-47d1-ae84-fab5526e298c" />
+
+

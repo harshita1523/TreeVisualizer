@@ -15,6 +15,9 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { TreeNode } from "../data/types";
 import { useStore } from "../context/store";
 import { getLayoutedElements } from "../flow/layout";
+import ExportJson from "./ExportJson";
+import { v4 as uuidv4 } from 'uuid';
+
 
 export default function FlowCanvas() {
   const storeNodes = useStore((s) => s.nodes);
@@ -36,9 +39,10 @@ export default function FlowCanvas() {
 
 const onConnect = useCallback(
   (params: Connection) => {
+    const edgeId = uuidv4();
     setEdges((eds) => {
       const updated = addEdge(
-        { ...params, type: ConnectionLineType.SmoothStep, animated: true },
+        { ...params,id:edgeId, type: ConnectionLineType.SmoothStep, animated: true },
         eds
       );
       setStoreEdges(updated);
@@ -86,6 +90,7 @@ const onConnect = useCallback(
           <MiniMap />
           <Background />
           <Controls />
+          <ExportJson/>
 
           {nodes.length === 0 && (
             <div className="absolute top-1/2 left-1/2 text-center -translate-x-1/2 -translate-y-1/2 text-gray-500">
